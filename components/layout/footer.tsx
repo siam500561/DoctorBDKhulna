@@ -97,7 +97,7 @@ export function Footer() {
               {hospitals.map((h) => (
                 <li key={h.id}>
                   <Link
-                    href={`/hospitals/${h.id}`}
+                    href={`/hospitals?hospital=${encodeURIComponent(h.name)}`}
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {h.name}

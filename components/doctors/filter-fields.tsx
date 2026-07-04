@@ -18,13 +18,13 @@ import {
   feeRanges,
 } from "@/components/home/data"
 import type {
-  DoctorFilterKey,
+  DoctorFilterArrayKey,
   DoctorFilterState,
 } from "@/hooks/use-doctor-filters"
 
 interface FilterFieldsProps {
   filters: DoctorFilterState
-  onToggle: (key: DoctorFilterKey, value: string) => void
+  onToggle: (key: DoctorFilterArrayKey, value: string) => void
 }
 
 function CheckboxGroup({
@@ -33,10 +33,10 @@ function CheckboxGroup({
   options,
   onToggle,
 }: {
-  filterKey: DoctorFilterKey
+  filterKey: DoctorFilterArrayKey
   values: string[]
   options: string[]
-  onToggle: (key: DoctorFilterKey, value: string) => void
+  onToggle: (key: DoctorFilterArrayKey, value: string) => void
 }) {
   return (
     <div className="space-y-2.5">

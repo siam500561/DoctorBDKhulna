@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -96,7 +97,13 @@ export function DoctorPanel({ doctor }: DoctorPanelProps) {
           </p>
 
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="rounded-lg">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-lg"
+              nativeButton={false}
+              render={<Link href={`/doctors/${doctor.id}`} />}
+            >
               View Profile
             </Button>
             <Button size="sm" className="rounded-lg">

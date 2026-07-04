@@ -2,13 +2,6 @@
 
 import * as React from "react"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
   Sheet,
   SheetContent,
   SheetFooter,
@@ -18,54 +11,33 @@ import {
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { FilterFields } from "@/components/doctors/filter-fields"
+import { SearchBar } from "@/components/doctors/search-bar"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { FilterIcon } from "@hugeicons/core-free-icons"
-import { categories } from "@/components/home/data"
 import type {
-  DoctorFilterKey,
+  DoctorFilterArrayKey,
   DoctorFilterState,
 } from "@/hooks/use-doctor-filters"
-
-const ALL = "all"
 
 interface MobileFilterBarProps {
   filters: DoctorFilterState
   activeFilterCount: number
-  onToggle: (key: DoctorFilterKey, value: string) => void
-  onSingleFilterChange: (key: DoctorFilterKey, value: string | null) => void
+  onToggle: (key: DoctorFilterArrayKey, value: string) => void
   onClear: () => void
+  onSearch: (value: string) => void
 }
 
 export function MobileFilterBar({
   filters,
   activeFilterCount,
   onToggle,
-  onSingleFilterChange,
   onClear,
+  onSearch,
 }: MobileFilterBarProps) {
   const [open, setOpen] = React.useState(false)
 
   return (
     <div className="flex items-center gap-2 lg:hidden">
-      <Select
-        value={filters.categories[0] ?? ALL}
-        onValueChange={(value) =>
-          onSingleFilterChange("categories", value === ALL ? null : value)
-        }
-      >
-        <SelectTrigger className="h-10 flex-1 rounded-xl">
-          <SelectValue placeholder="All Specialties" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL}>All Specialties</SelectItem>
-          {categories.map((cat) => (
-            <SelectItem key={cat.name} value={cat.name}>
-              {cat.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger
           render={
@@ -110,6 +82,8 @@ export function MobileFilterBar({
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      <SearchBar fullWidth value={filters.search} onSearch={onSearch} />
     </div>
   )
 }

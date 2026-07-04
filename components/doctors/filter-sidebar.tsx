@@ -3,14 +3,14 @@
 import { Button } from "@/components/ui/button"
 import { FilterFields } from "@/components/doctors/filter-fields"
 import type {
-  DoctorFilterKey,
+  DoctorFilterArrayKey,
   DoctorFilterState,
 } from "@/hooks/use-doctor-filters"
 
 interface FilterSidebarProps {
   filters: DoctorFilterState
   activeFilterCount: number
-  onToggle: (key: DoctorFilterKey, value: string) => void
+  onToggle: (key: DoctorFilterArrayKey, value: string) => void
   onClear: () => void
 }
 

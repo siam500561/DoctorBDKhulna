@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useSearchParams } from "next/navigation"
 import {
   doctors as allDoctors,
   experienceRanges,
@@ -8,6 +9,7 @@ import {
 } from "@/components/home/data"
 
 export interface DoctorFilterState {
+  search: string
   categories: string[]
   hospitals: string[]
   genders: string[]
@@ -16,9 +18,14 @@ export interface DoctorFilterState {
   feeRanges: string[]
 }
 
-export type DoctorFilterKey = keyof DoctorFilterState
+export type DoctorFilterArrayKey = {
+  [K in keyof DoctorFilterState]: DoctorFilterState[K] extends string[]
+    ? K
+    : never
+}[keyof DoctorFilterState]
 
 const emptyFilters: DoctorFilterState = {
+  search: "",
   categories: [],
   hospitals: [],
   genders: [],
@@ -33,13 +40,48 @@ const PAGE_SIZE = 5
  * Owns doctor-directory filter/pagination state against the local placeholder
  * dataset. Swap `allDoctors` for a real fetch when the backend is ready —
  * the filtering/pagination contract below can stay the same.
+ *
+ * Reads URL search params (?specialty=..., ?hospital=...) via useSearchParams
+ * so that both hard refreshes and client-side navigations apply the filters
+ * immediately.
  */
 export function useDoctorFilters() {
-  const [filters, setFilters] = React.useState<DoctorFilterState>(emptyFilters)
+  const searchParams = useSearchParams()
+
+  const urlFilters = React.useMemo<Partial<DoctorFilterState>>(() => {
+    const result: Partial<DoctorFilterState> = {}
+    const specialty = searchParams.get("specialty")
+    const hospital = searchParams.get("hospital")
+    if (specialty) result.categories = [specialty]
+    if (hospital) result.hospitals = [hospital]
+    return result
+  }, [searchParams])
+
+  const [filters, setFilters] = React.useState<DoctorFilterState>({
+    ...emptyFilters,
+    ...urlFilters,
+  })
+
   const [page, setPage] = React.useState(1)
 
+  // Sync filters when URL search params change (client-side navigation)
+  const urlFiltersKey = JSON.stringify(urlFilters)
+  const prevUrlFiltersKey = React.useRef(urlFiltersKey)
+  React.useEffect(() => {
+    if (urlFiltersKey !== prevUrlFiltersKey.current) {
+      prevUrlFiltersKey.current = urlFiltersKey
+      setFilters((prev) => {
+        const next = { ...emptyFilters, ...urlFilters }
+        // Only update if something actually changed
+        if (JSON.stringify(prev) === JSON.stringify(next)) return prev
+        return next
+      })
+      setPage(1)
+    }
+  }, [urlFiltersKey, urlFilters])
+
   const toggleFilter = React.useCallback(
-    (key: DoctorFilterKey, value: string) => {
+    (key: DoctorFilterArrayKey, value: string) => {
       setFilters((prev) => {
         const current = prev[key]
         const next = current.includes(value)
@@ -53,7 +95,7 @@ export function useDoctorFilters() {
   )
 
   const setSingleFilter = React.useCallback(
-    (key: DoctorFilterKey, value: string | null) => {
+    (key: DoctorFilterArrayKey, value: string | null) => {
       setFilters((prev) => ({ ...prev, [key]: value ? [value] : [] }))
       setPage(1)
     },
@@ -65,13 +107,31 @@ export function useDoctorFilters() {
     setPage(1)
   }, [])
 
+  const setSearch = React.useCallback((value: string) => {
+    setFilters((prev) => ({ ...prev, search: value }))
+    setPage(1)
+  }, [])
+
   const activeFilterCount = Object.values(filters).reduce(
-    (sum, values) => sum + values.length,
+    (sum, values) => sum + (Array.isArray(values) ? values.length : 0),
     0
   )
 
   const filteredDoctors = React.useMemo(() => {
+    const q = filters.search.toLowerCase().trim()
     return allDoctors.filter((doctor) => {
+      if (q) {
+        const haystack = [
+          doctor.name,
+          doctor.specialty,
+          doctor.hospital,
+          doctor.qualifications,
+          doctor.district,
+        ]
+          .join(" ")
+          .toLowerCase()
+        if (!haystack.includes(q)) return false
+      }
       if (
         filters.categories.length &&
         !filters.categories.includes(doctor.specialty)
@@ -109,7 +169,7 @@ export function useDoctorFilters() {
       }
       return true
     })
-  }, [filters])
+  }, [filters, filters.search])
 
   const totalCount = filteredDoctors.length
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
@@ -121,6 +181,7 @@ export function useDoctorFilters() {
 
   return {
     filters,
+    setSearch,
     toggleFilter,
     setSingleFilter,
     clearFilters,

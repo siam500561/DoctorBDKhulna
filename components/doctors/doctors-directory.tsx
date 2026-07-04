@@ -23,8 +23,8 @@ export function DoctorsDirectory() {
 
   const {
     filters,
+    setSearch,
     toggleFilter,
-    setSingleFilter,
     clearFilters,
     activeFilterCount,
     paginatedDoctors,
@@ -47,8 +47,8 @@ export function DoctorsDirectory() {
           filters={filters}
           activeFilterCount={activeFilterCount}
           onToggle={toggleFilter}
-          onSingleFilterChange={setSingleFilter}
           onClear={clearFilters}
+          onSearch={setSearch}
         />
       </div>
 
@@ -62,7 +62,9 @@ export function DoctorsDirectory() {
 
         <main className="min-w-0 flex-1">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <SearchBar />
+            <div className="hidden lg:block">
+              <SearchBar value={filters.search} onSearch={setSearch} />
+            </div>
             <SortSelect />
           </div>
 
