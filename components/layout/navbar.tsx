@@ -19,6 +19,7 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname()
+  const isAdmin = pathname.startsWith("/admin")
   const [scrolled, setScrolled] = React.useState(false)
 
   React.useEffect(() => {
@@ -49,34 +50,38 @@ export function Navbar() {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-0.5 md:flex">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "rounded-lg px-3 py-1.5 text-[0.8rem] font-medium transition-colors",
-                  pathname === link.href
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          {!isAdmin && (
+            <nav className="hidden items-center gap-0.5 md:flex">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "rounded-lg px-3 py-1.5 text-[0.8rem] font-medium transition-colors",
+                    pathname === link.href
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          )}
 
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            <Button className="hidden sm:inline-flex" size="sm">
-              <HugeiconsIcon
-                icon={Calendar03Icon}
-                strokeWidth={1.5}
-                data-icon="inline-start"
-              />
-              Book
-            </Button>
-            <MobileNav />
+            {!isAdmin && (
+              <Button className="hidden sm:inline-flex" size="sm">
+                <HugeiconsIcon
+                  icon={Calendar03Icon}
+                  strokeWidth={1.5}
+                  data-icon="inline-start"
+                />
+                Book
+              </Button>
+            )}
+            {!isAdmin && <MobileNav />}
           </div>
         </div>
       </Container>

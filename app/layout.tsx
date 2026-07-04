@@ -1,7 +1,11 @@
+import { headers } from "next/headers"
 import { Geist_Mono, Inter, Manrope } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { ConvexClientProvider } from "@/components/convex-client-provider"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 import { AnnouncementBar } from "@/components/layout/announcement-bar"
 import { Navbar } from "@/components/layout/navbar"
@@ -19,11 +23,14 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const headersList = await headers()
+  const isAdmin = headersList.get("x-admin-route") === "1"
+
   return (
     <html
       lang="en"
@@ -37,14 +44,23 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>
-          <div className="flex min-h-screen flex-col">
-            <AnnouncementBar />
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </ThemeProvider>
+        <ConvexClientProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              {isAdmin ? (
+                children
+              ) : (
+                <div className="flex min-h-screen flex-col">
+                  <AnnouncementBar />
+                  <Navbar />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+              )}
+              <Toaster position="top-right" />
+            </TooltipProvider>
+          </ThemeProvider>
+        </ConvexClientProvider>
       </body>
     </html>
   )
