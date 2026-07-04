@@ -1,0 +1,5 @@
+export { Hero } from "./hero"
+export { CategorySidebar } from "./category-sidebar"
+export { DoctorCard } from "./doctor-card"
+export { DoctorList } from "./doctor-list"
+export { Hospitals } from "./hospitals"
