@@ -22,9 +22,9 @@ const announcements = [
 
 export function AnnouncementBar() {
   return (
-    <div className="border-b border-border bg-secondary/50">
+    <div className="bg-primary">
       <Container>
-        <div className="flex h-9 items-center justify-between text-xs text-muted-foreground">
+        <div className="flex h-9 items-center justify-between text-xs text-primary-foreground">
           <div className="flex items-center gap-4 md:gap-6">
             {announcements.map((item) => (
               <div
@@ -34,10 +34,10 @@ export function AnnouncementBar() {
                 <HugeiconsIcon
                   icon={item.icon}
                   strokeWidth={1.5}
-                  className="size-3.5 shrink-0 text-primary"
+                  className="size-3.5 shrink-0 text-primary-foreground"
                 />
                 <span className="whitespace-nowrap">
-                  <span className="font-medium text-foreground">
+                  <span className="font-medium text-primary-foreground">
                     {item.label}:
                   </span>{" "}
                   {item.value}
@@ -45,7 +45,7 @@ export function AnnouncementBar() {
               </div>
             ))}
           </div>
-          <div className="ml-auto hidden text-xs font-medium text-primary sm:block">
+          <div className="ml-auto hidden text-xs font-medium text-primary-foreground sm:block">
             24/7 Emergency Service Available
           </div>
         </div>

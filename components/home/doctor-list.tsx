@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowRightIcon } from "@hugeicons/core-free-icons"
-import { DoctorCard } from "@/components/home/doctor-card"
+import { DoctorPanel } from "@/components/doctors/doctor-panel"
 import type { doctors as allDoctors } from "@/components/home/data"
 
 type Doctor = (typeof allDoctors)[number]
@@ -40,7 +40,7 @@ export function DoctorList({ doctors, title }: DoctorListProps) {
       ) : (
         <div className="space-y-3">
           {doctors.map((doctor) => (
-            <DoctorCard key={doctor.id} doctor={doctor} />
+            <DoctorPanel key={doctor.id} doctor={doctor} />
           ))}
         </div>
       )}
