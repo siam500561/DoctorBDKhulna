@@ -20,9 +20,7 @@ import { ThemeToggle } from "@/components/layout/theme-toggle"
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/doctors", label: "Doctors" },
-  { href: "/services", label: "Services" },
-  { href: "/departments", label: "Departments" },
-  { href: "/contact", label: "Contact" },
+  { href: "/hospitals", label: "Hospitals" },
 ]
 
 export function MobileNav() {

@@ -15,7 +15,6 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/doctors", label: "Doctors" },
   { href: "/hospitals", label: "Hospitals" },
-  { href: "/contact", label: "Contact" },
 ]
 
 export function Navbar() {
