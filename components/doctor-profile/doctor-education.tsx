@@ -1,9 +1,8 @@
 import { HugeiconsIcon } from "@hugeicons/react"
 import { GraduationScrollIcon } from "@hugeicons/core-free-icons"
-import type { DoctorProfile } from "@/lib/doctor-profile"
 
 interface DoctorEducationProps {
-  education: DoctorProfile["education"]
+  education: { degree: string; institute: string; year: number }[]
 }
 
 export function DoctorEducation({ education }: DoctorEducationProps) {

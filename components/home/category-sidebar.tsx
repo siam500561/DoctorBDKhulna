@@ -2,14 +2,22 @@
 
 import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { categories } from "@/components/home/data"
+import { StethoscopeIcon } from "@hugeicons/core-free-icons"
+
+export interface CategoryOption {
+  value: string
+  label: string
+  count: number
+}
 
 interface CategorySidebarProps {
+  categories: CategoryOption[]
   activeCategory: string | null
   onCategoryChange: (category: string | null) => void
 }
 
 export function CategorySidebar({
+  categories,
   activeCategory,
   onCategoryChange,
 }: CategorySidebarProps) {
@@ -30,27 +38,24 @@ export function CategorySidebar({
             )}
           >
             <span>Popular Doctors</span>
-            <span className="text-xs text-muted-foreground">
-              {categories.reduce((sum, c) => sum + c.count, 0)}
-            </span>
           </button>
           {categories.map((cat) => (
             <button
-              key={cat.name}
-              onClick={() => onCategoryChange(cat.name)}
+              key={cat.value}
+              onClick={() => onCategoryChange(cat.value)}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-                activeCategory === cat.name
+                activeCategory === cat.value
                   ? "bg-muted font-medium text-foreground"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
             >
               <HugeiconsIcon
-                icon={cat.icon}
+                icon={StethoscopeIcon}
                 strokeWidth={1.5}
                 className="size-4 shrink-0 opacity-60"
               />
-              <span className="flex-1 text-left">{cat.name}</span>
+              <span className="flex-1 text-left">{cat.label}</span>
               <span className="text-xs text-muted-foreground/70">
                 {cat.count}
               </span>

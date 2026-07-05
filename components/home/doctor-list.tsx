@@ -3,26 +3,21 @@ import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowRightIcon } from "@hugeicons/core-free-icons"
 import { DoctorPanel } from "@/components/doctors/doctor-panel"
-import type { doctors as allDoctors } from "@/components/home/data"
-
-type Doctor = (typeof allDoctors)[number]
+import type { PublicDoctor } from "@/lib/public-types"
 
 interface DoctorListProps {
-  doctors: Doctor[]
+  doctors: PublicDoctor[]
   title: string
 }
 
 export function DoctorList({ doctors, title }: DoctorListProps) {
   return (
     <div>
-      <div className="mb-5 flex items-baseline justify-between">
+      <div className="mb-5 flex items-baseline gap-3">
         <h2 className="font-heading text-lg font-semibold text-foreground">
           {title}
         </h2>
-        <div className="flex items-center gap-3">
-          <p className="text-xs text-muted-foreground">
-            {doctors.length} doctor{doctors.length !== 1 ? "s" : ""}
-          </p>
+        <div className="ml-auto">
           <Link href="/doctors">
             <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs text-primary">
               See All
@@ -40,7 +35,7 @@ export function DoctorList({ doctors, title }: DoctorListProps) {
       ) : (
         <div className="space-y-3">
           {doctors.map((doctor) => (
-            <DoctorPanel key={doctor.id} doctor={doctor} />
+            <DoctorPanel key={doctor._id} doctor={doctor} />
           ))}
         </div>
       )}

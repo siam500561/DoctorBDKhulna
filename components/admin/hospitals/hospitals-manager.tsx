@@ -116,7 +116,7 @@ export function HospitalsManager() {
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() =>
-                router.push(`/admin/hospitals/${row.original._id}/edit`)
+                router.push(`/admin/hospitals/${row.original.slug}/edit`)
               }
             >
               <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.5} />

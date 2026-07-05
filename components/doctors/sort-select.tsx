@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { SortByDown01Icon } from "@hugeicons/core-free-icons"
-import { sortOptions } from "@/components/home/data"
+import { sortOptions } from "@/lib/filter-ranges"
 
 // UI only — wire up to real ordering once the backend can sort results.
 export function SortSelect() {

@@ -2,11 +2,9 @@
 
 import * as React from "react"
 import { useSearchParams } from "next/navigation"
-import {
-  doctors as allDoctors,
-  experienceRanges,
-  feeRanges,
-} from "@/components/home/data"
+import { experienceRanges, feeRanges } from "@/lib/filter-ranges"
+import { specialtyLabel } from "@/components/admin/specialties"
+import type { PublicDoctor } from "@/lib/public-types"
 
 export interface DoctorFilterState {
   search: string
@@ -37,15 +35,12 @@ const emptyFilters: DoctorFilterState = {
 const PAGE_SIZE = 5
 
 /**
- * Owns doctor-directory filter/pagination state against the local placeholder
- * dataset. Swap `allDoctors` for a real fetch when the backend is ready —
- * the filtering/pagination contract below can stay the same.
- *
- * Reads URL search params (?specialty=..., ?hospital=...) via useSearchParams
- * so that both hard refreshes and client-side navigations apply the filters
- * immediately.
+ * Owns doctor-directory filter/pagination state against a live Convex query
+ * result. Reads URL search params (?specialty=..., ?hospital=...) via
+ * useSearchParams so that both hard refreshes and client-side navigations
+ * apply the filters immediately.
  */
-export function useDoctorFilters() {
+export function useDoctorFilters(doctors: PublicDoctor[] | undefined) {
   const searchParams = useSearchParams()
 
   const urlFilters = React.useMemo<Partial<DoctorFilterState>>(() => {
@@ -119,14 +114,14 @@ export function useDoctorFilters() {
 
   const filteredDoctors = React.useMemo(() => {
     const q = filters.search.toLowerCase().trim()
-    return allDoctors.filter((doctor) => {
+    return (doctors ?? []).filter((doctor) => {
       if (q) {
         const haystack = [
           doctor.name,
-          doctor.specialty,
-          doctor.hospital,
-          doctor.qualifications,
-          doctor.district,
+          specialtyLabel(doctor.specialty),
+          doctor.hospitalName ?? "",
+          doctor.qualifications.join(" "),
+          doctor.districtName ?? "",
         ]
           .join(" ")
           .toLowerCase()
@@ -139,14 +134,14 @@ export function useDoctorFilters() {
         return false
       if (
         filters.hospitals.length &&
-        !filters.hospitals.includes(doctor.hospital)
+        !filters.hospitals.includes(doctor.hospitalName ?? "")
       )
         return false
       if (filters.genders.length && !filters.genders.includes(doctor.gender))
         return false
       if (
         filters.availability.length &&
-        !filters.availability.includes(doctor.availability)
+        !filters.availability.includes(doctor.availabilityStatus)
       )
         return false
       if (filters.experienceRanges.length) {
@@ -154,8 +149,8 @@ export function useDoctorFilters() {
           const range = experienceRanges.find((r) => r.label === label)
           return (
             range &&
-            doctor.experience >= range.min &&
-            doctor.experience < range.max
+            doctor.experienceYears >= range.min &&
+            doctor.experienceYears < range.max
           )
         })
         if (!matches) return false
@@ -163,13 +158,17 @@ export function useDoctorFilters() {
       if (filters.feeRanges.length) {
         const matches = filters.feeRanges.some((label) => {
           const range = feeRanges.find((r) => r.label === label)
-          return range && doctor.fee >= range.min && doctor.fee <= range.max
+          return (
+            range &&
+            doctor.startingFee >= range.min &&
+            doctor.startingFee <= range.max
+          )
         })
         if (!matches) return false
       }
       return true
     })
-  }, [filters, filters.search])
+  }, [doctors, filters])
 
   const totalCount = filteredDoctors.length
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))

@@ -6,13 +6,16 @@ import { api } from "@/convex/_generated/api"
 import { HospitalForm } from "@/components/admin/hospitals/hospital-form"
 import { TableSkeleton } from "@/components/ui/loading-skeleton"
 
-export default function EditHospitalPage({
+export function EditHospitalClient({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { id } = use(params)
-  const hospital = useQuery(api.hospitals.get, { id: id as any })
+  const { slug } = use(params)
+  const hospital = useQuery(
+    api.hospitals.getBySlug,
+    slug ? { slug } : "skip"
+  )
 
   if (hospital === undefined) {
     return <TableSkeleton rows={4} />

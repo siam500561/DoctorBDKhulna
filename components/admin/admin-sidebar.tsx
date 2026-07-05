@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { AdminNavLinks } from "@/components/admin/admin-nav-links"
 import LogoutButton from "@/components/admin/logout-button"
 import { Button } from "@/components/ui/button"
@@ -30,14 +31,23 @@ export function AdminSidebar({
           collapsed && "justify-center px-2"
         )}
       >
-        <Link href="/admin" className="flex items-center gap-2 overflow-hidden">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
-            D
-          </span>
-          {!collapsed && (
-            <span className="truncate font-heading text-sm font-semibold text-foreground">
-              DoctorBD Admin
-            </span>
+        <Link href="/admin" className="flex items-center overflow-hidden">
+          {!collapsed ? (
+            <Image
+              src="/favicon.png"
+              alt="DoctorBDKhulna"
+              width={120}
+              height={40}
+              className="h-8 w-auto"
+            />
+          ) : (
+            <Image
+              src="/favicon.png"
+              alt="DoctorBDKhulna"
+              width={28}
+              height={28}
+              className="size-7"
+            />
           )}
         </Link>
       </div>

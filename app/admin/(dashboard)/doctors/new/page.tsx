@@ -1,7 +1,10 @@
-"use client"
+import type { Metadata } from "next"
+import { NewDoctorClient } from "./new-client"
 
-import { DoctorForm } from "@/components/admin/doctors/doctor-form"
+export const metadata: Metadata = {
+  title: "Add Doctor | DoctorBDKhulna Admin",
+}
 
 export default function NewDoctorPage() {
-  return <DoctorForm />
+  return <NewDoctorClient />
 }

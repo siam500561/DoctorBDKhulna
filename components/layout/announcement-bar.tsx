@@ -1,6 +1,6 @@
 import { Container } from "@/components/ui/container"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { AiPhoneIcon, MailIcon, Clock01Icon } from "@hugeicons/core-free-icons"
+import { AiPhoneIcon, MailIcon } from "@hugeicons/core-free-icons"
 
 const announcements = [
   {
@@ -12,11 +12,6 @@ const announcements = [
     icon: MailIcon,
     label: "Email",
     value: "info@doctorbdkhulna.com",
-  },
-  {
-    icon: Clock01Icon,
-    label: "Working Hours",
-    value: "Sun - Fri: 8:00 AM - 10:00 PM",
   },
 ]
 

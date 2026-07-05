@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DoctorPanel } from "@/components/doctors/doctor-panel"
@@ -16,17 +17,14 @@ import {
   Call02Icon,
   Calendar03Icon,
   ArrowLeft01Icon,
+  Hospital01Icon,
 } from "@hugeicons/core-free-icons"
-import type { doctors as allDoctors, hospitals } from "@/components/home/data"
-
-type Hospital = (typeof hospitals)[number]
-type Doctor = (typeof allDoctors)[number]
-
-const WORKING_HOURS = "Saturday – Thursday, 8:00 AM – 10:00 PM"
+import { hospitalTypeLabels } from "@/lib/labels"
+import type { PublicDoctor, PublicHospital } from "@/lib/public-types"
 
 interface HospitalDetailsViewProps {
-  hospital: Hospital
-  doctors: Doctor[]
+  hospital: PublicHospital
+  doctors: PublicDoctor[]
 }
 
 export function HospitalDetailsView({
@@ -54,18 +52,36 @@ export function HospitalDetailsView({
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
-          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-muted">
+        {hospital.coverImageUrl ? (
+          <div className="relative mt-4 h-48 w-full overflow-hidden rounded-2xl sm:h-64">
+            <Image
+              src={hospital.coverImageUrl}
+              alt={hospital.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 100vw, 640px"
+              priority
+            />
+          </div>
+        ) : (
+          <div className="mt-4 flex size-14 items-center justify-center rounded-2xl bg-muted">
             <HugeiconsIcon
-              icon={hospital.icon}
+              icon={Hospital01Icon}
               strokeWidth={1.5}
               className="size-6 text-muted-foreground"
             />
-          </span>
+          </div>
+        )}
+
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
           <div className="min-w-0">
             <h1 className="font-heading text-2xl font-semibold text-foreground md:text-3xl">
               {hospital.name}
             </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {hospitalTypeLabels[hospital.type] ?? hospital.type}
+              {hospital.districtName ? ` · ${hospital.districtName}` : ""}
+            </p>
             <div className="mt-2 space-y-1 text-sm text-muted-foreground">
               <p className="flex items-center gap-1.5">
                 <HugeiconsIcon
@@ -75,14 +91,16 @@ export function HospitalDetailsView({
                 />
                 {hospital.address}
               </p>
-              <p className="flex items-center gap-1.5">
-                <HugeiconsIcon
-                  icon={Calendar03Icon}
-                  strokeWidth={1.5}
-                  className="size-4 shrink-0 opacity-60"
-                />
-                {WORKING_HOURS}
-              </p>
+              {hospital.workingHours && (
+                <p className="flex items-center gap-1.5">
+                  <HugeiconsIcon
+                    icon={Calendar03Icon}
+                    strokeWidth={1.5}
+                    className="size-4 shrink-0 opacity-60"
+                  />
+                  {hospital.workingHours}
+                </p>
+              )}
               <p className="flex items-center gap-1.5">
                 <HugeiconsIcon
                   icon={Call02Icon}
@@ -115,7 +133,7 @@ export function HospitalDetailsView({
         ) : (
           <div className="space-y-3">
             {doctors.map((doctor) => (
-              <DoctorPanel key={doctor.id} doctor={doctor} />
+              <DoctorPanel key={doctor._id} doctor={doctor} />
             ))}
           </div>
         )}
@@ -123,6 +141,7 @@ export function HospitalDetailsView({
         <Button
           variant="outline"
           className="mt-8 rounded-lg"
+          nativeButton={false}
           render={<Link href="/hospitals" />}
         >
           <HugeiconsIcon

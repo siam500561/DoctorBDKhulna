@@ -8,23 +8,23 @@ import {
 } from "@/components/ui/accordion"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { HugeiconsIcon } from "@hugeicons/react"
-import {
-  categories,
-  hospitalNames,
-  genders,
-  availabilityOptions,
-  experienceRanges,
-  feeRanges,
-} from "@/components/home/data"
+import { genderLabels, availabilityLabels } from "@/lib/labels"
+import { experienceRanges, feeRanges } from "@/lib/filter-ranges"
 import type {
   DoctorFilterArrayKey,
   DoctorFilterState,
 } from "@/hooks/use-doctor-filters"
 
+interface SpecialtyOption {
+  value: string
+  label: string
+}
+
 interface FilterFieldsProps {
   filters: DoctorFilterState
   onToggle: (key: DoctorFilterArrayKey, value: string) => void
+  specialtyOptions: SpecialtyOption[]
+  hospitalOptions: string[]
 }
 
 function CheckboxGroup({
@@ -35,22 +35,22 @@ function CheckboxGroup({
 }: {
   filterKey: DoctorFilterArrayKey
   values: string[]
-  options: string[]
+  options: { value: string; label: string }[]
   onToggle: (key: DoctorFilterArrayKey, value: string) => void
 }) {
   return (
     <div className="space-y-2.5">
       {options.map((option) => {
-        const id = `${filterKey}-${option}`
+        const id = `${filterKey}-${option.value}`
         return (
-          <div key={option} className="flex items-center gap-2.5">
+          <div key={option.value} className="flex items-center gap-2.5">
             <Checkbox
               id={id}
-              checked={values.includes(option)}
-              onCheckedChange={() => onToggle(filterKey, option)}
+              checked={values.includes(option.value)}
+              onCheckedChange={() => onToggle(filterKey, option.value)}
             />
             <Label htmlFor={id} className="font-normal text-foreground">
-              {option}
+              {option.label}
             </Label>
           </div>
         )
@@ -59,7 +59,12 @@ function CheckboxGroup({
   )
 }
 
-export function FilterFields({ filters, onToggle }: FilterFieldsProps) {
+export function FilterFields({
+  filters,
+  onToggle,
+  specialtyOptions,
+  hospitalOptions,
+}: FilterFieldsProps) {
   return (
     <Accordion
       multiple
@@ -72,31 +77,12 @@ export function FilterFields({ filters, onToggle }: FilterFieldsProps) {
         </AccordionTrigger>
         <AccordionContent className="px-0">
           <div className="max-h-56 space-y-2.5 overflow-y-auto pr-1">
-            {categories.map((cat) => {
-              const id = `categories-${cat.name}`
-              return (
-                <div key={cat.name} className="flex items-center gap-2.5">
-                  <Checkbox
-                    id={id}
-                    checked={filters.categories.includes(cat.name)}
-                    onCheckedChange={() => onToggle("categories", cat.name)}
-                  />
-                  <Label
-                    htmlFor={id}
-                    className="flex-1 font-normal text-foreground"
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <HugeiconsIcon
-                        icon={cat.icon}
-                        strokeWidth={1.5}
-                        className="size-3.5 opacity-60"
-                      />
-                      {cat.name}
-                    </span>
-                  </Label>
-                </div>
-              )
-            })}
+            <CheckboxGroup
+              filterKey="categories"
+              values={filters.categories}
+              options={specialtyOptions}
+              onToggle={onToggle}
+            />
           </div>
         </AccordionContent>
       </AccordionItem>
@@ -109,7 +95,7 @@ export function FilterFields({ filters, onToggle }: FilterFieldsProps) {
           <CheckboxGroup
             filterKey="hospitals"
             values={filters.hospitals}
-            options={hospitalNames}
+            options={hospitalOptions.map((h) => ({ value: h, label: h }))}
             onToggle={onToggle}
           />
         </AccordionContent>
@@ -123,7 +109,10 @@ export function FilterFields({ filters, onToggle }: FilterFieldsProps) {
           <CheckboxGroup
             filterKey="genders"
             values={filters.genders}
-            options={genders}
+            options={Object.entries(genderLabels).map(([value, label]) => ({
+              value,
+              label,
+            }))}
             onToggle={onToggle}
           />
         </AccordionContent>
@@ -137,7 +126,9 @@ export function FilterFields({ filters, onToggle }: FilterFieldsProps) {
           <CheckboxGroup
             filterKey="availability"
             values={filters.availability}
-            options={availabilityOptions}
+            options={Object.entries(availabilityLabels).map(
+              ([value, label]) => ({ value, label })
+            )}
             onToggle={onToggle}
           />
         </AccordionContent>
@@ -151,7 +142,10 @@ export function FilterFields({ filters, onToggle }: FilterFieldsProps) {
           <CheckboxGroup
             filterKey="experienceRanges"
             values={filters.experienceRanges}
-            options={experienceRanges.map((r) => r.label)}
+            options={experienceRanges.map((r) => ({
+              value: r.label,
+              label: r.label,
+            }))}
             onToggle={onToggle}
           />
         </AccordionContent>
@@ -165,7 +159,7 @@ export function FilterFields({ filters, onToggle }: FilterFieldsProps) {
           <CheckboxGroup
             filterKey="feeRanges"
             values={filters.feeRanges}
-            options={feeRanges.map((r) => r.label)}
+            options={feeRanges.map((r) => ({ value: r.label, label: r.label }))}
             onToggle={onToggle}
           />
         </AccordionContent>

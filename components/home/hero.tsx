@@ -35,7 +35,7 @@ export function Hero() {
   )
 
   return (
-    <section className="bg-background py-6 md:py-8">
+    <section className="bg-background pt-6 pb-2 md:pt-8 md:pb-3">
       <Container>
         <div className="relative overflow-hidden rounded-2xl">
           <Carousel

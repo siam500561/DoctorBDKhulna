@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useSearchParams } from "next/navigation"
-import { hospitals as allHospitals } from "@/components/home/data"
+import type { PublicHospital } from "@/lib/public-types"
 
 export interface HospitalFilterState {
   search: string
@@ -16,15 +16,15 @@ const emptyFilters: HospitalFilterState = {
   districts: [],
 }
 
+const PAGE_SIZE = 9
+
 /**
- * Owns hospital-directory filter/pagination state against the local placeholder
- * dataset. Swap `allHospitals` for a real fetch when the backend is ready —
- * the filtering/pagination contract below can stay the same.
- *
- * Reads URL search params (?hospital=...) via useSearchParams so that both
- * hard refreshes and client-side navigations apply the filters immediately.
+ * Owns hospital-directory filter/pagination state against a live Convex
+ * query result. Reads URL search params (?hospital=...) via useSearchParams
+ * so that both hard refreshes and client-side navigations apply the filters
+ * immediately.
  */
-export function useHospitalFilters() {
+export function useHospitalFilters(hospitals: PublicHospital[] | undefined) {
   const searchParams = useSearchParams()
 
   const urlFilters = React.useMemo<Partial<HospitalFilterState>>(() => {
@@ -87,21 +87,26 @@ export function useHospitalFilters() {
     filters.districts.length + (filters.search ? 1 : 0)
 
   const filteredHospitals = React.useMemo(() => {
-    return allHospitals.filter((hospital) => {
+    if (!hospitals) return undefined
+    return hospitals.filter((hospital) => {
       if (
         filters.search &&
         !hospital.name.toLowerCase().includes(filters.search.toLowerCase())
       )
         return false
+      if (
+        filters.districts.length &&
+        !filters.districts.includes(hospital.districtName ?? "")
+      )
+        return false
       return true
     })
-  }, [filters])
+  }, [hospitals, filters])
 
-  const totalCount = filteredHospitals.length
-  const PAGE_SIZE = 9
+  const totalCount = filteredHospitals?.length ?? 0
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
-  const paginatedHospitals = filteredHospitals.slice(
+  const paginatedHospitals = filteredHospitals?.slice(
     (safePage - 1) * PAGE_SIZE,
     safePage * PAGE_SIZE
   )
@@ -113,6 +118,7 @@ export function useHospitalFilters() {
     clearFilters,
     activeFilterCount,
     paginatedHospitals,
+    isLoading: hospitals === undefined,
     page: safePage,
     setPage,
     totalPages,

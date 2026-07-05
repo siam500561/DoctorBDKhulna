@@ -2,12 +2,12 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Calendar03Icon } from "@hugeicons/core-free-icons"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { MobileNav } from "@/components/layout/mobile-nav"
 
@@ -41,13 +41,15 @@ export function Navbar() {
     >
       <Container>
         <div className="flex h-13 items-center justify-between gap-4 md:h-14">
-          <Link href="/" className="flex shrink-0 items-center gap-2">
-            <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
-              D
-            </span>
-            <span className="font-heading text-sm font-semibold tracking-tight text-foreground">
-              DoctorBD
-            </span>
+          <Link href="/" className="flex shrink-0 items-center">
+            <Image
+              src="/favicon.png"
+              alt="DoctorBDKhulna"
+              width={120}
+              height={40}
+              className="h-8 w-auto"
+              priority
+            />
           </Link>
 
           {!isAdmin && (
@@ -71,16 +73,6 @@ export function Navbar() {
 
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            {!isAdmin && (
-              <Button className="hidden sm:inline-flex" size="sm">
-                <HugeiconsIcon
-                  icon={Calendar03Icon}
-                  strokeWidth={1.5}
-                  data-icon="inline-start"
-                />
-                Book
-              </Button>
-            )}
             {!isAdmin && <MobileNav />}
           </div>
         </div>

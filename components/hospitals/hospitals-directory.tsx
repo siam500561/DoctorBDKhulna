@@ -1,7 +1,8 @@
 "use client"
 
-import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
+import { usePreloadedQuery, type Preloaded } from "convex/react"
 import { Container } from "@/components/ui/container"
 import { useHospitalFilters } from "@/hooks/use-hospital-filters"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -10,6 +11,7 @@ import {
   Call02Icon,
   SearchIcon,
   ArrowRightIcon,
+  Hospital01Icon,
 } from "@hugeicons/core-free-icons"
 import {
   Breadcrumb,
@@ -19,21 +21,18 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import type { api } from "@/convex/_generated/api"
 
-export function HospitalsDirectory() {
-  const [isLoading, setIsLoading] = React.useState(true)
+interface HospitalsDirectoryProps {
+  preloadedHospitals: Preloaded<typeof api.hospitals.listPublic>
+}
 
-  React.useEffect(() => {
-    const timeout = setTimeout(() => setIsLoading(false), 500)
-    return () => clearTimeout(timeout)
-  }, [])
-
-  const {
-    filters,
-    setSearch,
-    paginatedHospitals,
-    totalCount,
-  } = useHospitalFilters()
+export function HospitalsDirectory({
+  preloadedHospitals,
+}: HospitalsDirectoryProps) {
+  const hospitals = usePreloadedQuery(preloadedHospitals)
+  const { filters, setSearch, paginatedHospitals, totalCount } =
+    useHospitalFilters(hospitals)
 
   return (
     <Container>
@@ -54,7 +53,7 @@ export function HospitalsDirectory() {
           Hospitals & Diagnostic Centers
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Find trusted hospitals and diagnostic centers in Khulna and Bagerhat.
+          Find trusted hospitals and diagnostic centers in Khulna.
         </p>
         <p className="mt-3 text-xs text-muted-foreground">
           {totalCount > 0
@@ -83,23 +82,7 @@ export function HospitalsDirectory() {
         </div>
 
         {/* Hospital grid */}
-        {isLoading ? (
-          <div className="grid gap-px overflow-hidden rounded-xl border border-border/60 bg-border/60 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="flex items-start gap-4 bg-card p-5"
-              >
-                <div className="size-10 shrink-0 animate-pulse rounded-lg bg-muted" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-                  <div className="h-3 w-48 animate-pulse rounded bg-muted" />
-                  <div className="h-3 w-28 animate-pulse rounded bg-muted" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : paginatedHospitals.length === 0 ? (
+        {!paginatedHospitals || paginatedHospitals.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border/60 py-16 text-center">
             <p className="text-sm font-medium text-foreground">
               No hospitals found.
@@ -109,19 +92,31 @@ export function HospitalsDirectory() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-px overflow-hidden rounded-xl border border-border/60 bg-border/60 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {paginatedHospitals.map((hospital) => (
               <div
-                key={hospital.id}
-                className="flex items-start gap-4 bg-card p-5 transition-colors hover:bg-muted/30"
+                key={hospital._id}
+                className="flex items-start gap-4 rounded-xl border border-border/60 p-5 transition-colors hover:bg-muted/30"
               >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-                  <HugeiconsIcon
-                    icon={hospital.icon}
-                    strokeWidth={1.5}
-                    className="size-5 text-muted-foreground"
-                  />
-                </div>
+                {hospital.coverImageUrl ? (
+                  <div className="relative size-10 shrink-0 overflow-hidden rounded-lg">
+                    <Image
+                      src={hospital.coverImageUrl}
+                      alt={hospital.name}
+                      fill
+                      className="object-cover"
+                      sizes="40px"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <HugeiconsIcon
+                      icon={Hospital01Icon}
+                      strokeWidth={1.5}
+                      className="size-5 text-muted-foreground"
+                    />
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-medium text-foreground">
                     {hospital.name}
@@ -145,7 +140,7 @@ export function HospitalsDirectory() {
                     </div>
                   </div>
                   <Link
-                    href={`/hospitals/${hospital.id}`}
+                    href={`/hospitals/${hospital.slug}`}
                     className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary/80"
                   >
                     View Details

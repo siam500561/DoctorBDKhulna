@@ -1,7 +1,10 @@
-"use client"
+import type { Metadata } from "next"
+import { NewHospitalClient } from "./new-client"
 
-import { HospitalForm } from "@/components/admin/hospitals/hospital-form"
+export const metadata: Metadata = {
+  title: "Add Hospital | DoctorBDKhulna Admin",
+}
 
 export default function NewHospitalPage() {
-  return <HospitalForm />
+  return <NewHospitalClient />
 }

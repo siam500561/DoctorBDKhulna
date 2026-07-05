@@ -12,6 +12,8 @@ interface FilterSidebarProps {
   activeFilterCount: number
   onToggle: (key: DoctorFilterArrayKey, value: string) => void
   onClear: () => void
+  specialtyOptions: { value: string; label: string }[]
+  hospitalOptions: string[]
 }
 
 export function FilterSidebar({
@@ -19,6 +21,8 @@ export function FilterSidebar({
   activeFilterCount,
   onToggle,
   onClear,
+  specialtyOptions,
+  hospitalOptions,
 }: FilterSidebarProps) {
   return (
     <aside className="hidden w-64 shrink-0 lg:block">
@@ -36,7 +40,12 @@ export function FilterSidebar({
             Clear all ({activeFilterCount})
           </Button>
         </div>
-        <FilterFields filters={filters} onToggle={onToggle} />
+        <FilterFields
+          filters={filters}
+          onToggle={onToggle}
+          specialtyOptions={specialtyOptions}
+          hospitalOptions={hospitalOptions}
+        />
       </div>
     </aside>
   )

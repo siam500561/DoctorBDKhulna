@@ -1,25 +1,25 @@
 "use client"
 
 import * as React from "react"
+import { usePreloadedQuery, type Preloaded } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { Container } from "@/components/ui/container"
 import { useDoctorFilters } from "@/hooks/use-doctor-filters"
+import { specialtyLabel } from "@/components/admin/specialties"
 import { DoctorsHeader } from "@/components/doctors/doctors-header"
 import { SearchBar } from "@/components/doctors/search-bar"
-import { SortSelect } from "@/components/doctors/sort-select"
 import { FilterSidebar } from "@/components/doctors/filter-sidebar"
 import { MobileFilterBar } from "@/components/doctors/filter-sheet"
 import { DoctorPanel } from "@/components/doctors/doctor-panel"
-import { DoctorPanelSkeleton } from "@/components/doctors/doctor-panel-skeleton"
 import { DoctorsEmptyState } from "@/components/doctors/doctors-empty-state"
 import { DoctorsPagination } from "@/components/doctors/doctors-pagination"
 
-export function DoctorsDirectory() {
-  const [isLoading, setIsLoading] = React.useState(true)
+interface DoctorsDirectoryProps {
+  preloadedDoctors: Preloaded<typeof api.doctors.listPublic>
+}
 
-  React.useEffect(() => {
-    const timeout = setTimeout(() => setIsLoading(false), 500)
-    return () => clearTimeout(timeout)
-  }, [])
+export function DoctorsDirectory({ preloadedDoctors }: DoctorsDirectoryProps) {
+  const doctors = usePreloadedQuery(preloadedDoctors)
 
   const {
     filters,
@@ -33,7 +33,27 @@ export function DoctorsDirectory() {
     totalPages,
     totalCount,
     pageSize,
-  } = useDoctorFilters()
+  } = useDoctorFilters(doctors)
+
+  const specialtyOptions = React.useMemo(() => {
+    const seen = new Map<string, string>()
+    for (const doctor of doctors ?? []) {
+      if (!seen.has(doctor.specialty)) {
+        seen.set(doctor.specialty, specialtyLabel(doctor.specialty))
+      }
+    }
+    return Array.from(seen, ([value, label]) => ({ value, label })).sort(
+      (a, b) => a.label.localeCompare(b.label)
+    )
+  }, [doctors])
+
+  const hospitalOptions = React.useMemo(() => {
+    const seen = new Set<string>()
+    for (const doctor of doctors ?? []) {
+      if (doctor.hospitalName) seen.add(doctor.hospitalName)
+    }
+    return Array.from(seen).sort((a, b) => a.localeCompare(b))
+  }, [doctors])
 
   const from = totalCount === 0 ? 0 : (page - 1) * pageSize + 1
   const to = Math.min(page * pageSize, totalCount)
@@ -49,6 +69,8 @@ export function DoctorsDirectory() {
           onToggle={toggleFilter}
           onClear={clearFilters}
           onSearch={setSearch}
+          specialtyOptions={specialtyOptions}
+          hospitalOptions={hospitalOptions}
         />
       </div>
 
@@ -58,33 +80,28 @@ export function DoctorsDirectory() {
           activeFilterCount={activeFilterCount}
           onToggle={toggleFilter}
           onClear={clearFilters}
+          specialtyOptions={specialtyOptions}
+          hospitalOptions={hospitalOptions}
         />
 
         <main className="min-w-0 flex-1">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="mb-4 flex items-center justify-end gap-3">
             <div className="hidden lg:block">
               <SearchBar value={filters.search} onSearch={setSearch} />
             </div>
-            <SortSelect />
           </div>
 
-          {isLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: pageSize }).map((_, i) => (
-                <DoctorPanelSkeleton key={i} />
-              ))}
-            </div>
-          ) : paginatedDoctors.length === 0 ? (
+          {paginatedDoctors.length === 0 ? (
             <DoctorsEmptyState onClearFilters={clearFilters} />
           ) : (
             <div className="space-y-3">
               {paginatedDoctors.map((doctor) => (
-                <DoctorPanel key={doctor.id} doctor={doctor} />
+                <DoctorPanel key={doctor._id} doctor={doctor} />
               ))}
             </div>
           )}
 
-          {!isLoading && paginatedDoctors.length > 0 && (
+          {paginatedDoctors.length > 0 && (
             <div className="mt-8">
               <DoctorsPagination
                 page={page}

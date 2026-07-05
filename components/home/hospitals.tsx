@@ -1,13 +1,27 @@
+"use client"
+
+import Link from "next/link"
+import Image from "next/image"
+import { usePreloadedQuery, type Preloaded } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { Container } from "@/components/ui/container"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   MapPinIcon,
   Call02Icon,
   ArrowRightIcon,
+  Hospital01Icon,
 } from "@hugeicons/core-free-icons"
-import { hospitals } from "@/components/home/data"
 
-export function Hospitals() {
+interface HospitalsProps {
+  preloadedHospitals: Preloaded<typeof api.hospitals.listPublic>
+}
+
+export function Hospitals({ preloadedHospitals }: HospitalsProps) {
+  const hospitals = usePreloadedQuery(preloadedHospitals)
+
+  if (hospitals.length === 0) return null
+
   return (
     <section className="border-t border-border bg-muted/20">
       <Container>
@@ -20,19 +34,31 @@ export function Hospitals() {
               Hospitals & Diagnostics
             </h2>
           </div>
-          <div className="grid gap-px overflow-hidden rounded-xl border border-border/60 bg-border/60 sm:grid-cols-2 lg:grid-cols-3">
-            {hospitals.map((hospital) => (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {hospitals.slice(0, 6).map((hospital) => (
               <div
-                key={hospital.id}
-                className="flex items-start gap-4 bg-card p-5 transition-colors hover:bg-muted/30"
+                key={hospital._id}
+                className="flex items-start gap-4 rounded-xl border border-border/60 p-5 transition-colors hover:bg-muted/30"
               >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-                  <HugeiconsIcon
-                    icon={hospital.icon}
-                    strokeWidth={1.5}
-                    className="size-5 text-muted-foreground"
-                  />
-                </div>
+                {hospital.coverImageUrl ? (
+                  <div className="relative size-10 shrink-0 overflow-hidden rounded-lg">
+                    <Image
+                      src={hospital.coverImageUrl}
+                      alt={hospital.name}
+                      fill
+                      className="object-cover"
+                      sizes="40px"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <HugeiconsIcon
+                      icon={Hospital01Icon}
+                      strokeWidth={1.5}
+                      className="size-5 text-muted-foreground"
+                    />
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-medium text-foreground">
                     {hospital.name}
@@ -55,14 +81,17 @@ export function Hospitals() {
                       {hospital.phone}
                     </div>
                   </div>
-                  <button className="mt-3 flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary/80">
+                  <Link
+                    href={`/hospitals/${hospital.slug}`}
+                    className="mt-3 flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary/80"
+                  >
                     View Details
                     <HugeiconsIcon
                       icon={ArrowRightIcon}
                       strokeWidth={1.5}
                       className="size-3"
                     />
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}

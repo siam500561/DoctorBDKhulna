@@ -1,8 +1,8 @@
 import { DoctorPanel } from "@/components/doctors/doctor-panel"
-import type { doctors as allDoctors } from "@/components/home/data"
+import type { PublicDoctor } from "@/lib/public-types"
 
 interface RelatedDoctorsProps {
-  doctors: (typeof allDoctors)[number][]
+  doctors: PublicDoctor[]
 }
 
 export function RelatedDoctors({ doctors }: RelatedDoctorsProps) {
@@ -18,7 +18,7 @@ export function RelatedDoctors({ doctors }: RelatedDoctorsProps) {
       </h2>
       <div className="mt-3 space-y-3">
         {doctors.map((doctor) => (
-          <DoctorPanel key={doctor.id} doctor={doctor} />
+          <DoctorPanel key={doctor._id} doctor={doctor} />
         ))}
       </div>
     </section>

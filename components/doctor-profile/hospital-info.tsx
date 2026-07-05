@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -6,16 +7,13 @@ import {
   Call02Icon,
   Calendar03Icon,
   ArrowRightIcon,
+  Hospital01Icon,
 } from "@hugeicons/core-free-icons"
-import type { hospitals } from "@/components/home/data"
-
-type Hospital = (typeof hospitals)[number]
+import type { Doc } from "@/convex/_generated/dataModel"
 
 interface HospitalInfoProps {
-  hospital: Hospital
+  hospital: Doc<"hospitals"> & { coverImageUrl?: string | null }
 }
-
-const WORKING_HOURS = "Saturday – Thursday, 8:00 AM – 10:00 PM"
 
 export function HospitalInfo({ hospital }: HospitalInfoProps) {
   return (
@@ -27,13 +25,25 @@ export function HospitalInfo({ hospital }: HospitalInfoProps) {
         Hospital Information
       </h2>
       <div className="mt-3 flex flex-col gap-4 rounded-xl border border-border/60 p-5 sm:flex-row sm:items-start">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted">
-          <HugeiconsIcon
-            icon={hospital.icon}
-            strokeWidth={1.5}
-            className="size-5 text-muted-foreground"
-          />
-        </span>
+        {hospital.coverImageUrl ? (
+          <div className="relative size-11 shrink-0 overflow-hidden rounded-lg">
+            <Image
+              src={hospital.coverImageUrl}
+              alt={hospital.name}
+              fill
+              className="object-cover"
+              sizes="44px"
+            />
+          </div>
+        ) : (
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted">
+            <HugeiconsIcon
+              icon={Hospital01Icon}
+              strokeWidth={1.5}
+              className="size-5 text-muted-foreground"
+            />
+          </span>
+        )}
         <div className="min-w-0 flex-1">
           <h3 className="text-sm font-medium text-foreground">
             {hospital.name}
@@ -47,14 +57,16 @@ export function HospitalInfo({ hospital }: HospitalInfoProps) {
               />
               {hospital.address}
             </p>
-            <p className="flex items-center gap-1.5">
-              <HugeiconsIcon
-                icon={Calendar03Icon}
-                strokeWidth={1.5}
-                className="size-3.5 shrink-0 opacity-60"
-              />
-              {WORKING_HOURS}
-            </p>
+            {hospital.workingHours && (
+              <p className="flex items-center gap-1.5">
+                <HugeiconsIcon
+                  icon={Calendar03Icon}
+                  strokeWidth={1.5}
+                  className="size-3.5 shrink-0 opacity-60"
+                />
+                {hospital.workingHours}
+              </p>
+            )}
             <p className="flex items-center gap-1.5">
               <HugeiconsIcon
                 icon={Call02Icon}
@@ -69,7 +81,7 @@ export function HospitalInfo({ hospital }: HospitalInfoProps) {
             size="sm"
             className="mt-3 rounded-lg"
             nativeButton={false}
-            render={<Link href={`/hospitals/${hospital.id}`} />}
+            render={<Link href={`/hospitals/${hospital.slug}`} />}
           >
             View Hospital
             <HugeiconsIcon

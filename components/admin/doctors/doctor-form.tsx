@@ -225,7 +225,7 @@ export function DoctorForm({ doctor, affiliation }: DoctorFormProps) {
         specialty: "",
         qualifications: [],
         gender: "male",
-        primaryDistrictId: districts?.[0]?._id ?? "",
+        primaryDistrictId: districts?.find((d) => d.name === "Khulna")?._id ?? districts?.[0]?._id ?? "",
         experienceYears: 0,
         languages: ["Bangla", "English"],
         bio: "",

@@ -6,15 +6,15 @@ import { api } from "@/convex/_generated/api"
 import { DoctorForm } from "@/components/admin/doctors/doctor-form"
 import { TableSkeleton } from "@/components/ui/loading-skeleton"
 
-export default function EditDoctorPage({
+export function EditDoctorClient({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { id } = use(params)
+  const { slug } = use(params)
   const existing = useQuery(
-    api.doctors.get,
-    id ? { id: id as any } : "skip"
+    api.doctors.getBySlug,
+    slug ? { slug } : "skip"
   )
 
   if (existing === undefined) {

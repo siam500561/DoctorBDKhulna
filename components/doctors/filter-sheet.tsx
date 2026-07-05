@@ -25,6 +25,8 @@ interface MobileFilterBarProps {
   onToggle: (key: DoctorFilterArrayKey, value: string) => void
   onClear: () => void
   onSearch: (value: string) => void
+  specialtyOptions: { value: string; label: string }[]
+  hospitalOptions: string[]
 }
 
 export function MobileFilterBar({
@@ -33,6 +35,8 @@ export function MobileFilterBar({
   onToggle,
   onClear,
   onSearch,
+  specialtyOptions,
+  hospitalOptions,
 }: MobileFilterBarProps) {
   const [open, setOpen] = React.useState(false)
 
@@ -64,7 +68,12 @@ export function MobileFilterBar({
             <SheetTitle>Filters</SheetTitle>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-6">
-            <FilterFields filters={filters} onToggle={onToggle} />
+            <FilterFields
+              filters={filters}
+              onToggle={onToggle}
+              specialtyOptions={specialtyOptions}
+              hospitalOptions={hospitalOptions}
+            />
           </div>
           <SheetFooter className="flex-row gap-2">
             <Button

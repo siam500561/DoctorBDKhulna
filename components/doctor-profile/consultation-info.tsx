@@ -1,12 +1,12 @@
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Clock01Icon, Alert02Icon, VideoOffIcon } from "@hugeicons/core-free-icons"
-import type { DoctorProfile } from "@/lib/doctor-profile"
+import { Clock01Icon, VideoOffIcon } from "@hugeicons/core-free-icons"
+import type { PublicDoctor } from "@/lib/public-types"
 
 interface ConsultationInfoProps {
-  consultation: DoctorProfile["consultation"]
+  doctor: PublicDoctor
 }
 
-export function ConsultationInfo({ consultation }: ConsultationInfoProps) {
+export function ConsultationInfo({ doctor }: ConsultationInfoProps) {
   return (
     <section aria-labelledby="consultation-heading">
       <h2
@@ -20,26 +20,27 @@ export function ConsultationInfo({ consultation }: ConsultationInfoProps) {
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">New Patient</p>
           <p className="text-base font-semibold text-foreground">
-            ৳{consultation.newPatientFee.toLocaleString()}
+            ৳{doctor.newPatientFee.toLocaleString()}
           </p>
         </div>
         <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3">
           <p className="text-sm text-muted-foreground">Returning Patient</p>
           <p className="text-base font-semibold text-foreground">
-            ৳{consultation.returningPatientFee.toLocaleString()}
+            ৳{doctor.returningPatientFee.toLocaleString()}
           </p>
         </div>
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-          {consultation.returningPatientNote}
+          Patients who have not visited within {doctor.returningPatientWindowDays}{" "}
+          days will be considered new patients.
         </p>
 
         <div className="mt-4 flex items-center gap-2 border-t border-border/60 pt-4 text-xs text-muted-foreground">
-          {consultation.onlineFee !== null ? (
+          {doctor.supportsVideo && doctor.onlineFee != null ? (
             <>
               <span className="font-medium text-foreground">
                 Online Consultation:
               </span>
-              ৳{consultation.onlineFee.toLocaleString()}
+              ৳{doctor.onlineFee.toLocaleString()}
             </>
           ) : (
             <>
@@ -54,44 +55,20 @@ export function ConsultationInfo({ consultation }: ConsultationInfoProps) {
         </div>
       </div>
 
-      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="flex items-center gap-3 rounded-xl border border-border/60 p-4">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-            <HugeiconsIcon
-              icon={Clock01Icon}
-              strokeWidth={1.5}
-              className="size-4 text-muted-foreground"
-            />
-          </span>
-          <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">
-              Appointment Duration
-            </p>
-            <p className="text-sm font-medium text-foreground">
-              {consultation.duration}
-            </p>
-          </div>
+      <div className="mt-3 flex items-center gap-3 rounded-xl border border-border/60 p-4">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+          <HugeiconsIcon
+            icon={Clock01Icon}
+            strokeWidth={1.5}
+            className="size-4 text-muted-foreground"
+          />
+        </span>
+        <div className="min-w-0">
+          <p className="text-xs text-muted-foreground">Appointment Duration</p>
+          <p className="text-sm font-medium text-foreground">
+            {doctor.appointmentDurationMinutes} minutes
+          </p>
         </div>
-
-        {consultation.emergencyAvailable && (
-          <div className="flex items-center gap-3 rounded-xl border border-border/60 p-4">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-green-500/10">
-              <HugeiconsIcon
-                icon={Alert02Icon}
-                strokeWidth={1.5}
-                className="size-4 text-green-600 dark:text-green-400"
-              />
-            </span>
-            <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">
-                Emergency Availability
-              </p>
-              <p className="text-sm font-medium text-foreground">
-                Available today
-              </p>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   )

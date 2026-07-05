@@ -1,9 +1,8 @@
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Clock01Icon } from "@hugeicons/core-free-icons"
-import type { DoctorProfile } from "@/lib/doctor-profile"
 
 interface WeeklyScheduleProps {
-  schedule: DoctorProfile["schedule"]
+  schedule: string
 }
 
 export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {

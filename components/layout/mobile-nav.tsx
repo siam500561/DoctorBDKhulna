@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
@@ -40,15 +41,16 @@ export function MobileNav() {
           <SheetTitle>
             <Link
               href="/"
-              className="flex items-center gap-2"
+              className="flex items-center"
               onClick={() => setOpen(false)}
             >
-              <span className="flex size-8 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
-                D
-              </span>
-              <span className="font-heading text-base font-semibold text-foreground">
-                DoctorBD
-              </span>
+              <Image
+                src="/favicon.png"
+                alt="DoctorBDKhulna"
+                width={140}
+                height={45}
+                className="h-10 w-auto"
+              />
             </Link>
           </SheetTitle>
         </SheetHeader>
@@ -69,11 +71,8 @@ export function MobileNav() {
             </Link>
           ))}
           <Separator className="my-4" />
-          <div className="flex items-center gap-2 px-3">
+          <div className="px-3">
             <ThemeToggle />
-            <Button className="flex-1" onClick={() => setOpen(false)}>
-              Book Appointment
-            </Button>
           </div>
         </nav>
       </SheetContent>

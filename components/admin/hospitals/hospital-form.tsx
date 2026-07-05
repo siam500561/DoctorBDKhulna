@@ -152,7 +152,7 @@ export function HospitalForm({ hospital }: HospitalFormProps) {
         name: "",
         slug: "",
         type: "private",
-        districtId: districts?.[0]?._id ?? "",
+        districtId: districts?.find((d) => d.name === "Khulna")?._id ?? districts?.[0]?._id ?? "",
         address: "",
         phone: "",
         emergencyAvailable: false,

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import {
   Sheet,
   SheetContent,
@@ -39,15 +40,16 @@ export function AdminTopbar({ email }: AdminTopbarProps) {
               <SheetTitle>
                 <Link
                   href="/admin"
-                  className="flex items-center gap-2"
+                  className="flex items-center"
                   onClick={() => setOpen(false)}
                 >
-                  <span className="flex size-8 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
-                    D
-                  </span>
-                  <span className="font-heading text-base font-semibold text-foreground">
-                    DoctorBD Admin
-                  </span>
+                  <Image
+                    src="/favicon.png"
+                    alt="DoctorBDKhulna"
+                    width={140}
+                    height={45}
+                    className="h-10 w-auto"
+                  />
                 </Link>
               </SheetTitle>
             </SheetHeader>
@@ -60,8 +62,14 @@ export function AdminTopbar({ email }: AdminTopbarProps) {
             </div>
           </SheetContent>
         </Sheet>
-        <span className="font-heading text-sm font-semibold text-foreground md:hidden">
-          DoctorBD Admin
+        <span className="md:hidden">
+          <Image
+            src="/favicon.png"
+            alt="DoctorBDKhulna"
+            width={100}
+            height={32}
+            className="h-7 w-auto"
+          />
         </span>
       </div>
 
